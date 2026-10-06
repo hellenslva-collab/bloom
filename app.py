@@ -1,3 +1,4 @@
+# Importações
 import streamlit as st
 from datetime import date
 
@@ -8,15 +9,44 @@ st.set_page_config(
     layout="wide"
 )
 
+# Mensagem
+
 st.title("🌸 Bloom")
 
-# Mensagem
 st.header("Bem-vinda, Hellen! 💙")
 
 st.subheader("🌱 Adicione um novo hábito")
 
+# Variaveis  gerais
 hoje = str(date.today())
 
+
+# Funções
+def calcular_dias_seguidos(datas):
+    if not datas:
+        return 0
+    datas = sorted(datas)
+    ultima_data = datas[-1]   
+    dias_desde_ultima = hoje - ultima_data
+    if dias_desde_ultima.days > 1:
+        return 0
+
+    data_anterior = None
+    total = 1
+
+    for data in datas:
+        if data_anterior is None:
+            data_anterior = data
+        else:
+            sequencia = data - data_anterior
+            if sequencia.days == 1:
+                total += 1
+            else: 
+                total = 1
+        data_anterior = data
+    return total
+st.write(calcular_dias_seguidos([]))
+# Dados iniciais dos habitos
 if "habitos" not in st.session_state: st.session_state["habitos"]  = {
     "Academia": {
         "datas": [],
@@ -80,7 +110,9 @@ for habito in st.session_state["habitos"]:
         if hoje not in st.session_state["habitos"][habito]["datas"]: 
             st.session_state["habitos"][habito]["datas"].append(hoje)
         total += 1
-
+    else:
+       if hoje in habito["datas"]:
+            [habito]["datas"].remove(hoje) 
 if habito_excluir is not None: 
     st.session_state["habitos"].pop(habito_excluir) 
     st.rerun()
@@ -103,4 +135,5 @@ elif total <= 3:
 else:
     st.write("Excelente! Você está florescendo! 🌸")
 
-
+st.write("TESTE - Datas registradas: ")
+st.write(st.session_state["habitos"])
